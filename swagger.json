@@ -1,0 +1,1526 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Tienda Online Yeicy",
+    "description": "API para gestionar productos, categorías y autenticación de usuarios",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pytonapi.onrender.com"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Productos",
+      "description": "Gestión de productos"
+    },
+    {
+      "name": "Categorías",
+      "description": "Gestión de categorías"
+    },
+    {
+      "name": "Autenticación",
+      "description": "Gestión de inicio de sesión y registro de usuarios"
+    },
+    {
+      "name": "Usuarios",
+      "description": "Gestión de usuarios"
+    }
+  ],
+  "paths": {
+    "/productos": {
+      "get": {
+        "tags": ["Productos"],
+        "summary": "Obtener todos los productos",
+        "responses": {
+          "200": {
+            "description": "Lista de productos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "nombre": { "type": "string" },
+                      "precio": { "type": "number" },
+                      "descripcion": { "type": "string" },
+                      "categortia_id": { "type": "integer" }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": 1,
+                    "nombre": "Camiseta",
+                    "precio": 19.99,
+                    "descripcion": "Camiseta de algodón",
+                    "categortia_id": 1
+                  },
+                  {
+                    "id": 2,
+                    "nombre": "Pantalón",
+                    "precio": 39.99,
+                    "descripcion": "Pantalón vaquero",
+                    "categortia_id": 1
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Error al obtener los productos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al obtener los productos"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Productos"],
+        "summary": "Crear un nuevo producto",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "precio", "categortia_id"],
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "precio": { "type": "number" },
+                  "descripcion": { "type": "string" },
+                  "categortia_id": { "type": "integer" }
+                }
+              },
+              "example": {
+                "nombre": "Zapatillas",
+                "precio": 59.99,
+                "descripcion": "Zapatillas deportivas",
+                "categortia_id": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Producto creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "id": { "type": "integer" },
+                    "nombre": { "type": "string" },
+                    "precio": { "type": "number" },
+                    "descripcion": { "type": "string" },
+                    "categortia_id": { "type": "integer" }
+                  }
+                },
+                "example": {
+                  "message": "Producto agregado",
+                  "id": 3,
+                  "nombre": "Zapatillas",
+                  "precio": 59.99,
+                  "descripcion": "Zapatillas deportivas",
+                  "categortia_id": 2
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Faltan campos requeridos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Nombre, precio y categortia_id son requeridos"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoría no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Categoría no encontrada"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al crear el producto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al crear el producto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/productos/{id}": {
+      "get": {
+        "tags": ["Productos"],
+        "summary": "Obtener un producto por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "nombre": { "type": "string" },
+                    "precio": { "type": "number" },
+                    "descripcion": { "type": "string" },
+                    "categortia_id": { "type": "integer" }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "nombre": "Camiseta",
+                  "precio": 19.99,
+                  "descripcion": "Camiseta de algodón",
+                  "categortia_id": 1
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Producto no encontrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al obtener el producto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al obtener el producto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Productos"],
+        "summary": "Actualizar un producto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "precio", "categortia_id"],
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "precio": { "type": "number" },
+                  "descripcion": { "type": "string" },
+                  "categortia_id": { "type": "integer" }
+                }
+              },
+              "example": {
+                "nombre": "Camiseta Actualizada",
+                "precio": 24.99,
+                "descripcion": "Camiseta de algodón premium",
+                "categortia_id": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Producto actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "id": { "type": "integer" },
+                    "nombre": { "type": "string" },
+                    "precio": { "type": "number" },
+                    "descripcion": { "type": "string" },
+                    "categortia_id": { "type": "integer" }
+                  }
+                },
+                "example": {
+                  "message": "Producto actualizado",
+                  "id": 1,
+                  "nombre": "Camiseta Actualizada",
+                  "precio": 24.99,
+                  "descripcion": "Camiseta de algodón premium",
+                  "categortia_id": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Faltan campos requeridos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Nombre, precio y categortia_id son requeridos"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto o categoría no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Producto no encontrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al actualizar el producto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al actualizar el producto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Productos"],
+        "summary": "Eliminar un producto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "message": "Producto eliminado"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Producto no encontrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al eliminar el producto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al eliminar el producto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categorias": {
+      "get": {
+        "tags": ["Categorías"],
+        "summary": "Obtener todas las categorías",
+        "responses": {
+          "200": {
+            "description": "Lista de categorías",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "nombre": { "type": "string" }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": 1,
+                    "nombre": "Ropa"
+                  },
+                  {
+                    "id": 2,
+                    "nombre": "Calzado"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Error al obtener categorías",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al obtener categorías"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Categorías"],
+        "summary": "Crear una nueva categoría",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre"],
+                "properties": {
+                  "nombre": { "type": "string" }
+                }
+              },
+              "example": {
+                "nombre " : "Accesorios"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Categoría creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "id": { "type": "integer" },
+                    "nombre": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "message": "Categoría agregada",
+                  "id": 3,
+                  "nombre": "Accesorios"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falta el nombre de la categoría",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "El nombre es requerido"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al crear la categoría",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al crear la categoría"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categorias/{id}": {
+      "get": {
+        "tags": ["Categorías"],
+        "summary": "Obtener una categoría por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoría encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "nombre": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "nombre": "Ropa"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoría no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Categoría no encontrada"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al obtener la categoría",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al obtener la categoría"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Categorías"],
+        "summary": "Actualizar una categoría",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre"],
+                "properties": {
+                  "nombre": { "type": "string" }
+                }
+              },
+              "example": {
+                "nombre": "Ropa Actualizada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Categoría actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "id": { "type": "integer" },
+                    "nombre": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "message": "Categoría actualizada",
+                  "id": 1,
+                  "nombre": "Ropa Actualizada"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falta el nombre de la categoría",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "El nombre es requerido"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoría no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Categoría no encontrada"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al actualizar la categoría",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al actualizar la categoría"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Categorías"],
+        "summary": "Eliminar una categoría",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoría eliminada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "message": "Categoría eliminada"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoría no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Categoría no encontrada"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al eliminar la categoría",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al eliminar la categoría"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios": {
+      "get": {
+        "tags": ["Usuarios"],
+        "summary": "Obtener todos los usuarios",
+        "security": [{"JWT": []}],
+        "responses": {
+          "200": {
+            "description": "Lista de usuarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "numero": { "type": "string" },
+                      "nombre": { "type": "string" },
+                      "apellido": { "type": "string" }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": 1,
+                    "numero": "123456789",
+                    "nombre": "Juan",
+                    "apellido": "Perez"
+                  },
+                  {
+                    "id": 2,
+                    "numero": "987654321",
+                    "nombre": "Maria",
+                    "apellido": "Gomez"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Error al obtener los usuarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al obtener los usuarios"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Crear un nuevo usuario",
+        "security": [{"JWT": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["numero", "nombre", "apellido", "contrasena"],
+                "properties": {
+                  "numero": { "type": "string" },
+                  "nombre": { "type": "string" },
+                  "apellido": { "type": "string" },
+                  "contrasena": { "type": "string", "minLength": 6 }
+                }
+              },
+              "example": {
+                "numero": "123456789",
+                "nombre": "Juan",
+                "apellido": "Perez",
+                "contrasena": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "usuario": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "numero": { "type": "string" },
+                        "nombre": { "type": "string" },
+                        "apellido": { "type": "string" }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Usuario creado exitosamente",
+                  "usuario": {
+                    "id": 3,
+                    "numero": "123456789",
+                    "nombre": "Juan",
+                    "apellido": "Perez"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Faltan campos requeridos o contraseña inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "missing_fields": {
+                    "value": {
+                      "error": "Número, nombre, apellido y contraseña son requeridos"
+                    }
+                  },
+                  "short_password": {
+                    "value": {
+                      "error": "La contraseña debe tener al menos 6 caracteres"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El número ya está registrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "El número ya está registrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al crear el usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al crear el usuario"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/{id}": {
+      "get": {
+        "tags": ["Usuarios"],
+        "summary": "Obtener un usuario por ID",
+        "security": [{"JWT": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "numero": { "type": "string" },
+                    "nombre": { "type": "string" },
+                    "apellido": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "numero": "123456789",
+                  "nombre": "Juan",
+                  "apellido": "Perez"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Token inválido o faltante"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Usuario no encontrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al obtener el usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al obtener el usuario"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Usuarios"],
+        "summary": "Actualizar un usuario",
+        "security": [{"JWT": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["numero", "nombre", "apellido"],
+                "properties": {
+                  "numero": { "type": "string" },
+                  "nombre": { "type": "string" },
+                  "apellido": { "type": "string" },
+                  "contrasena": { "type": "string", "minLength": 6 }
+                }
+              },
+              "example": {
+                "numero": "123456789",
+                "nombre": "Juan Carlos",
+                "apellido": "Perez Gomez",
+                "contrasena": "nuevapassword123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "usuario": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "numero": { "type": "string" },
+                        "nombre": { "type": "string" },
+                        "apellido": { "type": "string" }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Usuario actualizado exitosamente",
+                  "usuario": {
+                    "id": 1,
+                    "numero": "123456789",
+                    "nombre": "Juan Carlos",
+                    "apellido": "Perez Gomez"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Faltan campos requeridos o contraseña inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "missing_fields": {
+                    "value": {
+                      "error": "Número, nombre y apellido son requeridos"
+                    }
+                  },
+                  "short_password": {
+                    "value": {
+                      "error": "La contraseña debe tener al menos 6 caracteres"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Token inválido o faltante"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Usuario no encontrado"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El número ya está en uso por otro usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "El número ya está en uso por otro usuario"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al actualizar el usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al actualizar el usuario"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Usuarios"],
+        "summary": "Eliminar un usuario",
+        "security": [{"JWT": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "message": "Usuario eliminado exitosamente"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Token inválido o faltante"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Usuario no encontrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al eliminar el usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al eliminar el usuario"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Iniciar sesión de un usuario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["numero", "contrasena"],
+                "properties": {
+                  "numero": { "type": "string" },
+                  "contrasena": { "type": "string" }
+                }
+              },
+              "example": {
+                "numero": "123456789",
+                "contrasena": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "usuario": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "numero": { "type": "string" },
+                        "nombre": { "type": "string" },
+                        "apellido": { "type": "string" }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Inicio de sesión exitoso",
+                  "usuario": {
+                    "id": 1,
+                    "numero": "123456789",
+                    "nombre": "Juan",
+                    "apellido": "Perez"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Faltan campos requeridos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Número y contraseña son requeridos"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Contraseña incorrecta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Contraseña incorrecta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Usuario no encontrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al procesar el inicio de sesión",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al procesar el inicio de sesión"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Registrar un nuevo usuario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["numero", "nombre", "apellido", "contrasena"],
+                "properties": {
+                  "numero": { "type": "string" },
+                  "nombre": { "type": "string" },
+                  "apellido": { "type": "string" },
+                  "contrasena": { "type": "string" }
+                }
+              },
+              "example": {
+                "numero": "123456789",
+                "nombre": "Juan",
+                "apellido": "Perez",
+                "contrasena": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario registrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "usuario": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "numero": { "type": "string" },
+                        "nombre": { "type": "string" },
+                        "apellido": { "type": "string" }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Usuario registrado exitosamente",
+                  "usuario": {
+                    "id": 1,
+                    "numero": "123456789",
+                    "nombre": "Juan",
+                    "apellido": "Perez"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Faltan campos requeridos o contraseña inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Número, nombre, apellido y contraseña son requeridos"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El número ya está registrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "El número ya está registrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error al registrar el usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Error al registrar el usuario"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
