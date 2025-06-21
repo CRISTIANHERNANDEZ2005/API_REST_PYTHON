@@ -19,8 +19,6 @@ from .blueprints.producto import producto_bp
 from .blueprints.documentacion import documentacion_bp
 from .blueprints.auth import auth_bp
 from .blueprints.usuario import usuario_bp
-from .blueprints.healthcheck import health_bp 
-
 
 cors = CORS(resources={r"/*": {"origins": "*"}})  # Permite todos los orígenes
 jwt = JWTManager()  # Instancia global de JWTManager
@@ -50,7 +48,6 @@ def create_app():
     jwt.init_app(app)  # Inicializa JWTManager
 
     # Registra Blueprints
-    app.register_blueprint(health_bp)
     app.register_blueprint(categoria_bp, url_prefix='/categorias')
     app.register_blueprint(producto_bp, url_prefix='/productos')
     app.register_blueprint(documentacion_bp, url_prefix='/documentacion')
