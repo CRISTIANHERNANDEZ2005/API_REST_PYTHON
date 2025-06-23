@@ -45,7 +45,7 @@ def get_usuarios():
     try:
         connection = get_db_connection()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT id, numero, nombre, apellido FROM usuario")
+            cursor.execute("SELECT id, numero, nombre, apellido FROM usuarios")
             usuarios = cursor.fetchall()
             return jsonify(usuarios)
     except pymysql.Error as err:
@@ -62,7 +62,7 @@ def get_usuario(id):
         connection = get_db_connection()
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT id, numero, nombre, apellido FROM usuario WHERE id = %s", 
+                "SELECT id, numero, nombre, apellido FROM usuarios WHERE id = %s", 
                 (id,)
             )
             usuario = cursor.fetchone()
@@ -100,7 +100,7 @@ def create_usuario():
         connection = get_db_connection()
         with connection.cursor() as cursor:
             # Verifica si el número ya está registrado
-            cursor.execute("SELECT id FROM usuario WHERE numero = %s", (numero,))
+            cursor.execute("SELECT id FROM usuarios WHERE numero = %s", (numero,))
             if cursor.fetchone():
                 return jsonify({"error": "El número ya está registrado"}), 409
 
@@ -109,8 +109,8 @@ def create_usuario():
 
             # Inserta el nuevo usuario
             cursor.execute(
-                """INSERT INTO usuario 
-                (numero, nombre, apellido, contrasena) 
+                """INSERT INTO usuarios
+                (numero, nombre, apellido, contrasena)
                 VALUES (%s, %s, %s, %s)""",
                 (numero, nombre, apellido, hashed_password)
             )
@@ -153,13 +153,13 @@ def update_usuario(id):
         connection = get_db_connection()
         with connection.cursor() as cursor:
             # Verifica si el usuario existe
-            cursor.execute("SELECT id FROM usuario WHERE id = %s", (id,))
+            cursor.execute("SELECT id FROM usuarios WHERE id = %s", (id,))
             if not cursor.fetchone():
                 return jsonify({"error": "Usuario no encontrado"}), 404
 
             # Verifica si el nuevo número ya está en uso por otro usuario
             cursor.execute(
-                "SELECT id FROM usuario WHERE numero = %s AND id != %s", 
+                "SELECT id FROM usuarios WHERE numero = %s AND id != %s", 
                 (numero, id)
             )
             if cursor.fetchone():
@@ -188,7 +188,7 @@ def update_usuario(id):
             
             # Construye y ejecuta la consulta
             update_values.append(id)
-            update_query = f"UPDATE usuario SET {', '.join(update_fields)} WHERE id = %s"
+            update_query = f"UPDATE usuarios SET {', '.join(update_fields)} WHERE id = %s"
             
             cursor.execute(update_query, update_values)
             connection.commit()
@@ -219,12 +219,12 @@ def delete_usuario(id):
         connection = get_db_connection()
         with connection.cursor() as cursor:
             # Verifica si el usuario existe
-            cursor.execute("SELECT id FROM usuario WHERE id = %s", (id,))
+            cursor.execute("SELECT id FROM usuarios WHERE id = %s", (id,))
             if not cursor.fetchone():
                 return jsonify({"error": "Usuario no encontrado"}), 404
 
             # Elimina el usuario
-            cursor.execute("DELETE FROM usuario WHERE id = %s", (id,))
+            cursor.execute("DELETE FROM usuarios WHERE id = %s", (id,))
             connection.commit()
             
             if cursor.rowcount == 0:
