@@ -51,7 +51,7 @@ def login():
         connection = get_db_connection()
         with connection.cursor() as cursor:
             # Busca el usuario por número
-            cursor.execute("SELECT * FROM usuario WHERE numero = %s", (numero,))
+            cursor.execute("SELECT * FROM usuarios WHERE numero = %s", (numero,))
             usuario = cursor.fetchone()
             
             if not usuario:
@@ -102,7 +102,7 @@ def register():
         connection = get_db_connection()
         with connection.cursor() as cursor:
             # Verifica si el número ya está registrado
-            cursor.execute("SELECT id FROM usuario WHERE numero = %s", (numero,))
+            cursor.execute("SELECT id FROM usuarios WHERE numero = %s", (numero,))
             if cursor.fetchone():
                 return jsonify({"error": "El número ya está registrado"}), 409
 
@@ -111,7 +111,7 @@ def register():
 
             # Inserta el nuevo usuario
             cursor.execute(
-                """INSERT INTO usuario 
+                """INSERT INTO usuarios
                 (numero, nombre, apellido, contrasena) 
                 VALUES (%s, %s, %s, %s)""",
                 (numero, nombre, apellido, hashed_password)

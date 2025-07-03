@@ -62,31 +62,43 @@ def get_producto(id):
 @producto_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_producto():
-    """Crea un nuevo producto"""
+    """Crea un nuevo producto con manejo mejorado de categorías"""
     data = request.get_json()
     nombre = data.get('nombre')
     precio = data.get('precio')
-    descripcion = data.get('descripcion', '')  # Opcional, con valor por defecto
-    nombre_categoria = data.get('nombre_categoria', '')  # Opcional, con valor por defecto
+    descripcion = data.get('descripcion', '')
     
-    # Validación de campos requeridos
+    # Manejo de categoría (puede venir como objeto o ID directo)
+    categoria_data = data.get('categoria', {})
+    categoria_id = categoria_data.get('id') if isinstance(categoria_data, dict) else None
+    nombre_categoria = categoria_data.get('nombre', '') if isinstance(categoria_data, dict) else ''
+
     if not all([nombre, precio is not None]):
         return jsonify({"error": "Nombre y precio son requeridos"}), 400
     
     try:
-        # Validar que el precio sea numérico
         precio = float(precio)
-    except (ValueError, TypeError):
-        return jsonify({"error": "El precio debe ser un número válido"}), 400
+        if categoria_id:
+            categoria_id = int(categoria_id)
+    except (ValueError, TypeError) as e:
+        return jsonify({"error": f"Datos inválidos: {str(e)}"}), 400
 
     try:
         connection = get_db_connection()
         with connection.cursor() as cursor:
+            # Verificar si existe la categoría si se proporcionó ID
+            if categoria_id:
+                cursor.execute("SELECT nombre FROM categoria WHERE id = %s", (categoria_id,))
+                cat = cursor.fetchone()
+                if not cat:
+                    return jsonify({"error": "Categoría no encontrada"}), 400
+                nombre_categoria = cat['nombre']
+
             cursor.execute(
                 """INSERT INTO productos 
-                (nombre, precio, descripcion, nombre_categoria) 
-                VALUES (%s, %s, %s, %s)""",
-                (nombre, precio, descripcion, nombre_categoria)
+                (nombre, precio, descripcion, categoria_id, nombre_categoria) 
+                VALUES (%s, %s, %s, %s, %s)""",
+                (nombre, precio, descripcion, categoria_id, nombre_categoria)
             )
             connection.commit()
             producto_id = cursor.lastrowid
@@ -98,6 +110,7 @@ def create_producto():
                     "nombre": nombre,
                     "precio": precio,
                     "descripcion": descripcion,
+                    "categoria_id": categoria_id,
                     "nombre_categoria": nombre_categoria
                 }
             }), 201
@@ -110,34 +123,47 @@ def create_producto():
 @producto_bp.route('/<int:id>', methods=['PUT'])
 @jwt_required()
 def update_producto(id):
-    """Actualiza un producto existente"""
+    """Actualiza un producto con manejo mejorado de categorías"""
     data = request.get_json()
     nombre = data.get('nombre')
     precio = data.get('precio')
     descripcion = data.get('descripcion', '')
-    nombre_categoria = data.get('nombre_categoria', '')
     
-    # Validación de campos requeridos
+    # Manejo de categoría
+    categoria_data = data.get('categoria', {})
+    categoria_id = categoria_data.get('id') if isinstance(categoria_data, dict) else None
+    nombre_categoria = ''
+
     if not all([nombre, precio is not None]):
         return jsonify({"error": "Nombre y precio son requeridos"}), 400
     
     try:
-        # Validar que el precio sea numérico
         precio = float(precio)
-    except (ValueError, TypeError):
-        return jsonify({"error": "El precio debe ser un número válido"}), 400
+        if categoria_id:
+            categoria_id = int(categoria_id)
+    except (ValueError, TypeError) as e:
+        return jsonify({"error": f"Datos inválidos: {str(e)}"}), 400
 
     try:
         connection = get_db_connection()
         with connection.cursor() as cursor:
+            # Verificar categoría si se proporcionó
+            if categoria_id:
+                cursor.execute("SELECT nombre FROM categoria WHERE id = %s", (categoria_id,))
+                cat = cursor.fetchone()
+                if not cat:
+                    return jsonify({"error": "Categoría no encontrada"}), 400
+                nombre_categoria = cat['nombre']
+
             cursor.execute(
                 """UPDATE productos SET 
                 nombre = %s, 
                 precio = %s, 
                 descripcion = %s, 
+                categoria_id = %s, 
                 nombre_categoria = %s 
                 WHERE id = %s""",
-                (nombre, precio, descripcion, nombre_categoria, id)
+                (nombre, precio, descripcion, categoria_id, nombre_categoria, id)
             )
             connection.commit()
             
@@ -151,6 +177,7 @@ def update_producto(id):
                     "nombre": nombre,
                     "precio": precio,
                     "descripcion": descripcion,
+                    "categoria_id": categoria_id,
                     "nombre_categoria": nombre_categoria
                 }
             })
