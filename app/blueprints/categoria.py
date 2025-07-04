@@ -132,6 +132,7 @@ def update_categoria(id):
 @jwt_required()
 def delete_categoria(id):
     """Elimina una categoría"""
+    
     try:
         connection = get_db_connection()
         with connection.cursor() as cursor:
